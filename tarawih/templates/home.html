@@ -1,0 +1,356 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tarawih Nights</title>
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --panel: #f4f4f4;
+      --card: #f7f7f7;
+      --border: #d6d6d6;
+      --text: #111;
+      --muted: #666;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+      --radius: 10px;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* Top "Navigation" bar */
+    .topbar{
+      position: sticky;
+      top: 0;
+      background: #eee;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+    .topbar .menu{
+      position:absolute;
+      right:18px;
+      top: 14px;
+      border: 0;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: #444;
+    }
+
+    /* Page panel */
+    .panel{
+      max-width: 980px;
+      margin: 26px auto;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      border-radius: 6px;
+      padding: 26px 26px 18px;
+    }
+    h1{
+      margin: 0 0 18px;
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    /* Carousel area */
+    .carousel{
+      position: relative;
+      padding: 6px 48px 14px; /* room for arrows */
+    }
+    .track{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* Night card */
+    .night-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      min-height: 420px;
+    }
+    .night-title{
+      text-align: center;
+      font-weight: 700;
+      font-size: 20px;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+    .night-date{
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .night-range{
+      text-align:center;
+      color: #444;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .rakah-list{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 2px;
+      max-height: 300px;
+      overflow: auto;
+    }
+    .rakah-pill{
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+    .rakah-pill .left{
+      font-weight: 600;
+      color: #222;
+    }
+    .rakah-pill .right{
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      margin-left: 12px;
+    }
+
+    /* Arrows */
+    .arrow{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.7);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      color: #444;
+      user-select: none;
+    }
+    .arrow.left{ left: 6px; }
+    .arrow.right{ right: 6px; }
+    .arrow:disabled{
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    /* Dots */
+    .dots{
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 12px;
+      padding-bottom: 4px;
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #bdbdbd;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+    }
+    .dot.active{
+      background: #666;
+    }
+
+    /* Bottom row */
+    .bottom-row{
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 18px;
+    }
+    .download-btn{
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      background: #efefef;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: #222;
+      font-weight: 600;
+    }
+    .download-btn:hover{
+      background: #e8e8e8;
+    }
+
+    /* Responsive: show 1 or 2 cards on smaller screens */
+    @media (max-width: 900px){
+      .track{ grid-template-columns: repeat(2, 1fr); }
+      .night-card{ min-height: 420px; }
+    }
+    @media (max-width: 640px){
+      .carousel{ padding-left: 40px; padding-right: 40px; }
+      .track{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    Navigation
+    <button class="menu" aria-label="Menu">☰</button>
+  </div>
+
+  <div class="panel">
+    <h1>Data for 29 Nights</h1>
+
+    <!-- We render ALL nights, but JS shows them in pages of 3 -->
+    <div class="carousel" id="carousel">
+      <button class="arrow left" id="prevBtn" aria-label="Previous">‹</button>
+      <button class="arrow right" id="nextBtn" aria-label="Next">›</button>
+
+      <div class="track" id="track">
+        {% for n in nights %}
+          <div class="night-card night-item">
+            <div class="night-title">Night {{ n.night_number }}</div>
+
+            {# If you have a date field, show it. If not, it shows nothing. #}
+            {% if n.date %}
+              <div class="night-date">{{ n.date|date:"jS M Y" }}</div>
+            {% else %}
+              <div class="night-date">&nbsp;</div>
+            {% endif %}
+
+            <div class="night-range">
+              {{ n.start_surah }}:{{ n.start_ayah }} → {{ n.end_surah }}:{{ n.end_ayah }}
+            </div>
+
+            <div class="rakah-list">
+              {% for r in n.rakahs.all %}
+                <div class="rakah-pill">
+                  <div class="left">Rak‘ah {{ r.rakah_number }}</div>
+                  <div class="right">{{ r.start_surah }}:{{ r.start_ayah }} → {{ r.end_surah }}:{{ r.end_ayah }}</div>
+                </div>
+              {% empty %}
+                <div class="rakah-pill">
+                  <div class="left">No rak‘ahs yet</div>
+                  <div class="right">Add in admin</div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="dots" aria-hidden="true">
+              <span style="width:8px;height:8px;border-radius:999px;background:#bdbdbd;display:inline-block;"></span>
+              <span style="width:8px;height:8px;border-radius:999px;background:#bdbdbd;display:inline-block;"></span>
+              <span style="width:8px;height:8px;border-radius:999px;background:#bdbdbd;display:inline-block;"></span>
+            </div>
+          </div>
+        {% empty %}
+          <div class="night-card">
+            <div class="night-title">No data</div>
+            <div class="night-date">Add nights in Django admin</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="dots" id="pageDots"></div>
+    </div>
+
+    <div class="bottom-row">
+      {# If you don’t have a download view yet, leave href="#" for now #}
+      <a class="download-btn" href="#">
+        <span style="font-size:18px;">⬇</span>
+        Download Spreadsheet
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const items = Array.from(document.querySelectorAll(".night-item"));
+      const track = document.getElementById("track");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const dotsWrap = document.getElementById("pageDots");
+
+      // How many cards per "page" (matches desktop grid: 3)
+      function cardsPerPage(){
+        const w = window.innerWidth;
+        if (w <= 640) return 1;
+        if (w <= 900) return 2;
+        return 3;
+      }
+
+      let page = 0;
+
+      function totalPages(){
+        const per = cardsPerPage();
+        return Math.max(1, Math.ceil(items.length / per));
+      }
+
+      function renderDots(){
+        dotsWrap.innerHTML = "";
+        const pages = totalPages();
+        for(let i=0;i<pages;i++){
+          const b = document.createElement("button");
+          b.className = "dot" + (i === page ? " active" : "");
+          b.setAttribute("aria-label", `Page ${i+1}`);
+          b.addEventListener("click", () => { page = i; update(); });
+          dotsWrap.appendChild(b);
+        }
+      }
+
+      function update(){
+        const per = cardsPerPage();
+        const pages = totalPages();
+        if (page > pages - 1) page = pages - 1;
+        if (page < 0) page = 0;
+
+        // Show only items for current page
+        items.forEach((el, idx) => {
+          const start = page * per;
+          const end = start + per;
+          el.style.display = (idx >= start && idx < end) ? "" : "none";
+        });
+
+        prevBtn.disabled = (page === 0);
+        nextBtn.disabled = (page >= pages - 1);
+
+        // Update dots
+        Array.from(dotsWrap.children).forEach((d, i) => {
+          d.classList.toggle("active", i === page);
+        });
+      }
+
+      prevBtn.addEventListener("click", () => { page -= 1; update(); });
+      nextBtn.addEventListener("click", () => { page += 1; update(); });
+
+      window.addEventListener("resize", () => {
+        renderDots();
+        update();
+      });
+
+      renderDots();
+      update();
+    })();
+  </script>
+</body>
+</html>
