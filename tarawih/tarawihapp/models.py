@@ -9,13 +9,11 @@ class TarawihNight(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(29)],
     )
 
-    start_surah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(114)])
-    start_ayah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+    start_surah = models.TextField(blank=True)  # can be a single surah number or a range like "2-3"
+    start_ayah = models.TextField(blank=True)
 
-    end_surah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(114)])
-    end_ayah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
-
-    title = models.CharField(max_length=120, blank=True)  # optional, e.g. "Night 1"
+    end_surah = models.TextField(blank=True)  # can be a single surah number or a range like "2-3"
+    end_ayah = models.TextField(blank=True)
 
     class Meta:
         ordering = ["night_number"]
@@ -33,11 +31,11 @@ class TarawihRakah(models.Model):
 
     rakah_number = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
 
-    start_surah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(114)])
-    start_ayah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+    start_surah = models.TextField(blank=True)  # can be a single surah number or a range like "2-3"
+    start_ayah = models.TextField(blank=True)
 
-    end_surah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(114)])
-    end_ayah = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+    end_surah = models.TextField(blank=True)  # can be a single surah number or a range like "2-3"
+    end_ayah = models.TextField(blank=True)
 
     class Meta:
         ordering = ["night__night_number", "rakah_number"]

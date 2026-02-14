@@ -29,7 +29,6 @@
     min-height: 100vh;
   }
 
-  /* Top bar */
   .topbar{
     position: sticky;
     top: 0;
@@ -40,26 +39,8 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    letter-spacing: .4px;
-  }
-  .topbar::before{
-    content:"🌙";
-    position:absolute;
-    left:18px;
-    font-size:20px;
-  }
-  .topbar .menu{
-    position:absolute;
-    right:18px;
-    top: 14px;
-    border: 0;
-    background: transparent;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--gold);
   }
 
-  /* Panel */
   .panel{
     max-width: 980px;
     margin: 30px auto;
@@ -76,24 +57,20 @@
     font-weight: 700;
     text-align: center;
     color: var(--gold);
-    letter-spacing: .5px;
   }
 
-  /* Grid */
   .track{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
 
-  /* Night card */
   .night-card{
     background: linear-gradient(180deg, #233554, #1c2541);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 16px 14px;
+    padding: 16px;
     min-height: 420px;
-    box-shadow: inset 0 0 0 1px rgba(233,196,106,.05);
   }
 
   .night-title{
@@ -101,7 +78,6 @@
     font-weight: 700;
     font-size: 20px;
     color: var(--gold);
-    margin-bottom: 2px;
   }
 
   .night-date{
@@ -118,12 +94,11 @@
     color: #e0e6f1;
   }
 
-  /* Rakah list */
+  /* FIXED RAKAH LIST */
   .rakah-list{
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 2px;
     max-height: 300px;
     overflow: auto;
   }
@@ -133,30 +108,30 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 9px 12px;
+
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
+    gap: 10px;
+    align-items: flex-start;
   }
 
   .rakah-pill .left{
     font-weight: 600;
     color: var(--gold);
+    white-space: nowrap;
+    flex: 0 0 auto;
   }
 
   .rakah-pill .right{
     color: var(--muted);
     font-size: 13px;
-    white-space: nowrap;
-    margin-left: 12px;
+
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
-  /* Decorative dots (stars) */
-  .night-card span{
-    box-shadow: 0 0 6px rgba(233,196,106,.6);
-  }
-
-  /* Bottom */
   .bottom-row{
     display: flex;
     justify-content: flex-end;
@@ -174,17 +149,12 @@
     text-decoration: none;
     color: #1c2541;
     font-weight: 700;
-    box-shadow: 0 6px 18px rgba(0,0,0,.4);
   }
 
-  .download-btn:hover{
-    filter: brightness(1.05);
-  }
-
-  /* Responsive */
   @media (max-width: 900px){
     .track{ grid-template-columns: repeat(2, 1fr); }
   }
+
   @media (max-width: 640px){
     .track{ grid-template-columns: 1fr; }
   }
@@ -192,60 +162,46 @@
 </head>
 
 <body>
-  <div class="topbar">
-    Navigation
-    <button class="menu" aria-label="Menu">☰</button>
-  </div>
+  <div class="topbar">Navigation</div>
 
   <div class="panel">
     <h1>Data for 29 Nights</h1>
 
-    <!-- ALL nights show in a wrapping grid -->
-    <div class="grid-wrap">
-      <div class="track">
-        {% for n in nights %}
-          <div class="night-card">
-            <div class="night-title">Night {{ n.night_number }}</div>
+    <div class="track">
+      {% for n in nights %}
+        <div class="night-card">
+          <div class="night-title">Night {{ n.night_number }}</div>
 
-            {% if n.date %}
-              <div class="night-date">{{ n.date|date:"jS M Y" }}</div>
-            {% else %}
-              <div class="night-date">&nbsp;</div>
-            {% endif %}
-
-            <div class="night-range">
-              {{ n.start_surah }}:{{ n.start_ayah }} → {{ n.end_surah }}:{{ n.end_ayah }}
-            </div>
-
-            <div class="rakah-list">
-              {% for r in n.rakahs.all %}
-                <div class="rakah-pill">
-                  <div class="left">Rak‘ah {{ r.rakah_number }}</div>
-                  <div class="right">{{ r.start_surah }}:{{ r.start_ayah }} → {{ r.end_surah }}:{{ r.end_ayah }}</div>
-                </div>
-              {% empty %}
-                <div class="rakah-pill">
-                  <div class="left">No rak‘ahs yet</div>
-                  <div class="right">Add in admin</div>
-                </div>
-              {% endfor %}
-            </div>
-
-           
+          <div class="night-date">
+            {{ n.date|default:"&nbsp;" }}
           </div>
-        {% empty %}
-          <div class="night-card">
-            <div class="night-title">No data</div>
-            <div class="night-date">Add nights in Django admin</div>
+
+          <div class="night-range" dir="rtl">
+            {{ n.start_surah }}:{{ n.start_ayah }} → {{ n.end_surah }}:{{ n.end_ayah }}
           </div>
-        {% endfor %}
-      </div>
+
+          <div class="rakah-list">
+            {% for r in n.rakahs.all %}
+              <div class="rakah-pill">
+                <div class="left">Rak‘ah {{ r.rakah_number }}</div>
+                <div class="right" dir="rtl">
+                  {{ r.start_surah }}:{{ r.start_ayah }} → {{ r.end_surah }}:{{ r.end_ayah }}
+                </div>
+              </div>
+            {% empty %}
+              <div class="rakah-pill">
+                <div class="left">No rak‘ahs</div>
+                <div class="right">Add in admin</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
     </div>
 
     <div class="bottom-row">
       <a class="download-btn" href="{% url 'download_pdf' %}">
-        <span style="font-size:18px;">⬇</span>
-        Download PDF
+        ⬇ Download PDF
       </a>
     </div>
   </div>
