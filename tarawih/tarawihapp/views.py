@@ -1,19 +1,26 @@
 from django.http import FileResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
-from .models import *
+from pathlib import Path
+
+from .models import TarawihNight
+
 
 # Create your views here.
 def home(request):
     Nights = TarawihNight.objects.all()
-    context = {"nights": Nights}
-    return render(request, "home.html",{"nights": Nights})
+    return render(request, "home.html", {"nights": Nights})
 
-#download view:
-from pathlib import Path
 
+def rakah(request):
+    # Prefetch related rakahs to avoid N+1 queries
+    Nights = TarawihNight.objects.prefetch_related("rakahs").all()
+    return render(request, "rakah.html", {"nights": Nights})
+
+
+# download view:
 def download_pdf(request):
-    pdf_path = Path(settings.MEDIA_ROOT) / "tarwih_file.pdf"
+    pdf_path = Path(settings.MEDIA_ROOT) / "Tarweeh 29 Nights, V4.pdf"
     if not pdf_path.exists():
         raise Http404("PDF not found")
 
