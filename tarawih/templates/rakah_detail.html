@@ -4,9 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tarawih Nights</title>
+  <title>Night {{ night.night_number }} - Tarawih</title>
 
-  <!-- Arabic-friendly font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -20,9 +19,7 @@
     --gold: #e9c46a;
     --shadow: 0 10px 30px rgba(0,0,0,.5);
   }
-
   *{ box-sizing: border-box; }
-
   body{
     margin:0;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -30,8 +27,6 @@
     color: var(--text);
     min-height: 100vh;
   }
-
-  /* ===== TOP BAR ===== */
   .topbar{
     position: sticky;
     top: 0;
@@ -42,12 +37,7 @@
     justify-content: flex-end;
     z-index: 10;
   }
-
-  /* ===== DROPDOWN MENU ===== */
-  .menu-wrapper{
-    position: relative;
-  }
-
+  .menu-wrapper{ position: relative; }
   .menu-btn{
     background: transparent;
     border: none;
@@ -57,7 +47,6 @@
     cursor: pointer;
     letter-spacing: .4px;
   }
-
   .menu-dropdown{
     position: absolute;
     top: 100%;
@@ -72,7 +61,6 @@
     overflow: hidden;
     z-index: 20;
   }
-
   .menu-dropdown a{
     display: block;
     padding: 12px 16px;
@@ -80,18 +68,12 @@
     color: var(--text);
     font-weight: 600;
   }
-
   .menu-dropdown a:hover{
     background: rgba(255,255,255,.06);
     color: var(--gold);
   }
+  .menu-wrapper.open .menu-dropdown{ display: block; }
 
-  /* show dropdown when JS adds .open */
-  .menu-wrapper.open .menu-dropdown{
-    display: block;
-  }
-
-  /* ===== PANEL ===== */
   .panel{
     max-width: 980px;
     margin: 30px auto;
@@ -101,81 +83,79 @@
     border-radius: 14px;
     padding: 28px;
   }
-
   h1{
-    margin: 0 0 20px;
+    margin: 0 0 18px;
     font-size: 34px;
     font-weight: 700;
     text-align: center;
     color: var(--gold);
   }
-
   .night-title{
     font-weight: 800;
     color: var(--gold);
     font-size: 22px;
-    margin: 32px 0 10px;
+    margin: 10px 0 10px;
+    text-align: center;
   }
-
   .night-divider{
     border: none;
     border-top: 1px solid var(--border);
-    margin: 6px 0 18px;
+    margin: 10px 0 18px;
   }
-
-  /* ===== TABLE ===== */
   .nights-table{
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 24px;
   }
-
   .nights-table th,
   .nights-table td{
     border-bottom: 1px solid var(--border);
     padding: 18px;
     vertical-align: top;
   }
-
   .nights-table thead th{
     background: rgba(0,0,0,.25);
     color: var(--gold);
     font-weight: 800;
     text-align: center;
   }
-
   .night-col{
     width: 120px;
     text-align: center;
     font-weight: 800;
     color: var(--gold);
   }
-
   .cell-ar{
     direction: rtl;
     text-align: right;
     color: #eaf0ff;
   }
-
   .verse-line{
     font-family: "Amiri", serif;
     font-size: 20px;
     line-height: 2.1;
     margin-bottom: 8px;
   }
-
   .ref-line{
     font-family: "Amiri", serif;
     font-size: 16px;
     opacity: .9;
   }
-
   .bottom-row{
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    gap: 12px;
     padding-top: 22px;
   }
-
+  .btn{
+    background: rgba(255,255,255,.08);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 16px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 700;
+  }
   .download-btn{
     background: linear-gradient(180deg, #e9c46a, #d4af37);
     border-radius: 10px;
@@ -188,74 +168,63 @@
 </head>
 
 <body>
-
-  <!-- ✅ CLICK MENU -->
   <div class="topbar">
     <div class="menu-wrapper" id="navMenu">
-      <button class="menu-btn" id="menuBtn" type="button">
-        Menu ▾
-      </button>
+      <button class="menu-btn" id="menuBtn" type="button">Menu ▾</button>
       <div class="menu-dropdown">
         <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'rakah' %}">Rakats</a>
       </div>
     </div>
   </div>
 
   <div class="panel">
     <h1>Summary for 20 rakats</h1>
+    <div class="night-title">Night {{ night.night_number }}</div>
+    <hr class="night-divider" />
 
-    {% for n in nights %}
-      <div class="night-title">Night {{ n.night_number }}</div>
-      <hr class="night-divider" />
-
-      <table class="nights-table" dir="rtl">
-        <thead>
+    <table class="nights-table" dir="rtl">
+      <thead>
+        <tr>
+          <th class="night-col">Rakah</th>
+          <th>Start</th>
+          <th>End</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in night.rakahs.all %}
           <tr>
-            <th class="night-col">Rakah</th>
-            <th>From</th>
-            <th>Till</th>
+            <td class="night-col">{{ r.rakah_number }}</td>
+
+            <td class="cell-ar">
+              {% if r.start_ayah %}
+                <div class="verse-line">{{ r.start_ayah }}</div>
+              {% endif %}
+              <div class="ref-line">{{ r.start_surah }}</div>
+            </td>
+
+            <td class="cell-ar">
+              {% if r.end_ayah %}
+                <div class="verse-line">{{ r.end_ayah }}</div>
+              {% endif %}
+              <div class="ref-line">{{ r.end_surah }}</div>
+            </td>
           </tr>
-        </thead>
-
-        <tbody>
-          {% for r in n.rakahs.all %}
-            <tr>
-              <td class="night-col">{{ r.rakah_number }}</td>
-
-              <td class="cell-ar">
-                {% if r.start_ayah %}
-                  <div class="verse-line">{{ r.start_ayah }}</div>
-                {% endif %}
-                <div class="ref-line">{{ r.start_surah }}</div>
-              </td>
-
-              <td class="cell-ar">
-                {% if r.end_ayah %}
-                  <div class="verse-line">{{ r.end_ayah }}</div>
-                {% endif %}
-                <div class="ref-line">{{ r.end_surah }}</div>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="3" style="text-align:center; opacity:.8;">
-                No rakahs added for Night {{ n.night_number }} yet.
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endfor %}
+        {% empty %}
+          <tr>
+            <td colspan="3" style="text-align:center; opacity:.8;">
+              No rakahs added for Night {{ night.night_number }} yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
     <div class="bottom-row">
-      <a class="download-btn" href="{% url 'download_pdf' %}">
-        ⬇ Download PDF
-      </a>
+      <a class="btn" href="{% url 'home' %}">← Back</a>
+      <a class="download-btn" href="{% url 'download_pdf' %}">⬇ Download PDF</a>
     </div>
   </div>
 
-  <!-- ✅ MENU JS (keeps menu open) -->
   <script>
     (function () {
       const wrapper = document.getElementById("navMenu");
@@ -271,12 +240,9 @@
       });
 
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          wrapper.classList.remove("open");
-        }
+        if (e.key === "Escape") wrapper.classList.remove("open");
       });
     })();
   </script>
-
 </body>
 </html>

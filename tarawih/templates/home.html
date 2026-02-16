@@ -170,6 +170,14 @@
     white-space: nowrap;
   }
 
+  .night-col-link{
+    width: 120px;
+    text-align: center;
+    font-weight: 800;
+    color: var(--gold);
+    white-space: nowrap;
+    text-decoration: none;
+  }
   .nights-table tbody tr:last-child td{
     border-bottom: none;
   }
@@ -205,7 +213,8 @@
       </button>
       <div class="menu-dropdown">
         <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'rakah' %}">Rakats</a>
+        <a rel="noopener" target="_blank" href="https://docs.google.com/document/d/e/2PACX-1vTXRmYvKkcBQgBUD2w-tcWu0LzpbyTfzdsx-fvu2SKv74UPABTInjypCyLAuN-fyaEi7SxEvbeYcVH8/pub">Background</a>
+        <a rel="noopener" target="_blank" href="https://forms.gle/Ut3CWwX6NFCjXTCV7">Feedback</a>
       </div>
     </div>
   </div>
@@ -226,7 +235,11 @@
       <tbody>
         {% for n in nights %}
           <tr>
-            <td class="night-col">Night {{ n.night_number }}</td>
+            <td class="night-col">
+              <a class="night-col-link" href="{% url 'rakah' n.night_number %}">
+                Night {{ n.night_number }}
+              </a>
+            </td>
 
             <td class="cell-ar">
               {% if n.start_ayah %}

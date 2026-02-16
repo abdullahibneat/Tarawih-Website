@@ -3,6 +3,6 @@ from tarawihapp import views
 
 urlpatterns = [
     path("",views.home, name='home'),
-    path("rakah/", views.rakah, name='rakah'),
+    path("rakah/<int:night_number>/", views.rakah, name='rakah'),
     path("download/", views.download_pdf, name="download_pdf"),
 ]
