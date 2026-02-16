@@ -36,6 +36,8 @@ class TarawihRakah(models.Model):
 
     end_surah = models.TextField(blank=True)  # can be a single surah number or a range like "2-3"
     end_ayah = models.TextField(blank=True)
+    
+    full_recitation = models.TextField(blank=True,)  # can be a list of surah:ayah pairs or a description of the full recitation for this rakah
 
     class Meta:
         ordering = ["night__night_number", "rakah_number"]
