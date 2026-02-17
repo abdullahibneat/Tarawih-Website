@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    volumes:
+      - tarawih-db:/app
+    env_file:
+      - path: .env
+        required: false
+
+volumes:
+  tarawih-db:
