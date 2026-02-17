@@ -21,7 +21,7 @@ def rakah(request, night_number):
 
 
 def download_pdf(request):
-    pdf_path = Path(settings.MEDIA_ROOT) / "Tarweeh 29 Nights, V4.pdf"
+    pdf_path = Path(settings.MEDIA_ROOT) / "Tarweeh 29 Nights Breakdown, V4.1.pdf"
     if not pdf_path.exists():
         raise Http404("PDF not found")
 
